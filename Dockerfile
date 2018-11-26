@@ -1,10 +1,6 @@
-# A minimal Docker image with Node and Puppeteer
-#
-# Based upon:
-# https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-in-docker
+FROM node:8.12.0-slim
+# FROM node:10.13.0-slim@sha256:fefd53d3e2bceeac151d1bb65b4e45238aca5a19bc5cfade099038f7c2449fc1
 
-FROM node:10.13.0-slim@sha256:fefd53d3e2bceeac151d1bb65b4e45238aca5a19bc5cfade099038f7c2449fc1
-    
 RUN  apt-get update \
      # See https://crbug.com/795759
      && apt-get install -yq libgconf-2-4 \
@@ -15,8 +11,10 @@ RUN  apt-get update \
      && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
      && apt-get update \
      && apt-get install -y google-chrome-unstable --no-install-recommends \
-     && rm -rf /var/lib/apt/lists/*
+     && apt-get install -y git \
+     && rm -rf /var/lib/apt/lists/* \
+     && curl https://cli-assets.heroku.com/install.sh | sh 
 
 # Install Puppeteer under /node_modules so it's available system-wide
 ADD package.json package-lock.json /
-RUN npm install
+RUN npm i && npm i -g yarn
